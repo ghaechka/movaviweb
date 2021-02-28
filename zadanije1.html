@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задание 1</title>
+</head>
+<body>
+    <a href="/">Вернуться на главную</a><br>
+    <code style='display:block; width: 500px; background-color: rgb(238, 238, 238); line-height: 26px;'>const http = require('http'); <br>
+        const fs = require('fs');<br>
+        <br>
+        const hostname = '192.168.2.41'; // IP <br>
+        const port = 3000; // порт<br>
+        <br>
+        const server = http.createServer((req, res) => {<br>
+            <br>
+            let url = req.url; // /<br>
+            if (url.length == 1) {<br>
+                let html = fs.readFileSync('index.html');<br>
+                res.writeHead(200, { 'Content-Type': 'text/html', });<br>
+                res.write(html)<br>
+            };<br>
+            res.end();<br>
+        }<br>
+        );<br>
+        <br>
+        server.listen(port, hostname, () => {<br>
+            console.log('Server is running!')<br>
+        })</code>
+</body>
+</html>
