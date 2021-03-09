@@ -5,8 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Шаблон сайта</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
+    <header>{{header}}</header>
     <h1>Hello, {{name}} </h1>
+    <p>Настройте git. Скачайте git, и <a href="https://www.youtube.com/watch?v=F1bQEpwFCHc">настройте</a> его.</p>
+
+    <ul>
+        <li>Создать три страницы: Главная, галерея, обо мне</li>
+        <li>Создать шапку в отдельном файле header.html</li>
+        <li>В шапке разместить меню, состоящую из трех ссылок, каждая из которых ведет на файл</li>
+        <li>Собрать сайт, используя шаблон ( {{header}} )</li>
+        <li>Добавить стили для посещенной ссылки, непосещенной, при наведении.</li>
+        <li>Подключить сайт к серверу, настроить роутинг и тд.</li>
+    </ul>
+
+    <nav><a href="/index">Главная</a> <a href="/gallery">Галлерея</a> <a href="/about">Обо мне</a></nav>
+
 </body>
 </html>
