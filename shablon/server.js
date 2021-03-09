@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 
-const hostname = '192.168.2.41'; // IP 
+const hostname = '192.168.30.122'; // IP 
 const port = 4000; // порт
 
 const server = http.createServer((req, res) => {
@@ -16,7 +16,7 @@ const server = http.createServer((req, res) => {
         if (req.url.endsWith('.css')) {
             let cssFile = req.url.slice(1);
 
-            fs.readFile (cssFile, (err, data) => {
+            fs.readFile(cssFile, (err, data) => {
                 if (err) throw err;
 
                 res.setHeader('Content-Type', 'text/css');
@@ -25,34 +25,40 @@ const server = http.createServer((req, res) => {
                 res.end()
             })
         }
-        else if (req.url.endsWith('.js')){
+        else if (req.url.endsWith('.js')) {
             let jsFile = req.url.slice(1);
 
-            fs.readFile (jsFile, (err, data) => {
+            fs.readFile(jsFile, (err, data) => {
                 if (err) throw err;
 
                 res.setHeader('Content-Type', 'text/javascript');
                 res.statusCode = 200;
                 res.write(data);
                 res.end()
+            })
         }
-
-        fs.readFile(url.substr(1, url.length)+'.html', function (err, data) {
-            if (!err) {
-                res.writeHead(200, { 'Content-Type': 'text/html', });
-                data = data.toString().replace("{{name}}", "Sofie");
-                // res.write(data)
-                res.end(data);
-            } else {
-                fs.readFile('404.html', function (err, data) {
-                    res.writeHead(400, { 'Content-Type': 'text/html', });
-                    res.write(data)
-                    res.end();
+        else {
+            fs.readFile(url.substr(1, url.length) + '.html', function (err, data) {
+                if (!err) {
+                    res.statusCode = 200
+                    res.setHeader('Content-Type', 'text/html');
+                    fs.readFile('header.html', function (err, data_header) {
+                        data = data.toString().replace("{{name}}", data_header.toString());
+                        res.write(data)
+                        res.end();
+                    })
+                } else {
+                    fs.readFile('404.html', function (err, data) {
+                        res.statusCode = 400;
+                        res.setHeader('Content-Type', 'text/html');
+                        res.write(data)
+                        res.end();
+                    }
+                    );
                 }
-                );
-            }
-        })
+            })
 
+        }
     }
 }
 );
