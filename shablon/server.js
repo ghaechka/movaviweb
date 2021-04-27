@@ -1,58 +1,59 @@
+'use strict'
+
 const http = require('http');
 const fs = require('fs');
+const path = require('path');
 
-const hostname = '192.168.30.122'; // IP 
+const hostname = '192.168.30.156'; // IP 
 const port = 4000; // порт
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((req, response) => {
     let url = req.url;
     if (url == '/') {
         url = '/index'
     }
+    types = { '.css': 'text/css', 'jpg': 'image/jpg' };
 
-    // console.log(url);
     if (url != '/favicon.ico') {
 
-        if (req.url.endsWith('.css')) {
-            let cssFile = req.url.slice(1);
-
-            fs.readFile(cssFile, (err, data) => {
-                if (err) throw err;
-
-                res.setHeader('Content-Type', 'text/css');
-                res.statusCode = 200;
-                res.write(data);
-                res.end()
-            })
-        }
-        else if (req.url.endsWith('.js')) {
-            let jsFile = req.url.slice(1);
-
-            fs.readFile(jsFile, (err, data) => {
-                if (err) throw err;
-
-                res.setHeader('Content-Type', 'text/javascript');
-                res.statusCode = 200;
-                res.write(data);
-                res.end()
-            })
+        if (url.includes('.')) {
+            let ext = path.extname(url);
+            if (ext in types) {
+                response.statusCode = 200;
+                response.setHeader('Content-type', types[ext]);
+                fs.readFile('./' + url, function (err, data) {
+                    if (!err) {
+                        response.write(data);
+                        response.end();
+                    } else {
+                        console.log(err);
+                        response.end();
+                    }
+                })
+            }
         }
         else {
+            // /html/index.html
+            // {'j.html':[1,2,3,4]}
             fs.readFile(url.substr(1, url.length) + '.html', function (err, data) {
                 if (!err) {
-                    res.statusCode = 200
-                    res.setHeader('Content-Type', 'text/html');
-                    fs.readFile('header.html', function (err, data_header) {
-                        data = data.toString().replace("{{name}}", data_header.toString());
-                        res.write(data)
-                        res.end();
+                    response.statusCode = 418;
+                    response.setHeader('Content-Type', 'text/html');
+                    fs.readFile('./html/header.html', 'utf8', (err, header) => {
+                        data = data.replace('{{ header }}', header)
+                        fs.readFile('./html/header.html', 'utf8', (err, header) => {
+                            data = data.replace('{{ header }}', header)
+                            response.write(data);
+                            response.end();
+                        })
                     })
+
                 } else {
                     fs.readFile('404.html', function (err, data) {
-                        res.statusCode = 400;
-                        res.setHeader('Content-Type', 'text/html');
-                        res.write(data)
-                        res.end();
+                        response.statusCode = 400;
+                        response.setHeader('Content-Type', 'text/html');
+                        response.write(data)
+                        response.end();
                     }
                     );
                 }
@@ -68,3 +69,15 @@ const server = http.createServer((req, res) => {
 server.listen(port, hostname, () => {
     console.log('Server is running!')
 })
+
+/*
+1. Определить ip и порт в переменные
+2. создаешь сервер
+3. Включаешь прослушку
+4. проверяешь, все ли ок
+
+5. внутри сервера создаешь условие - ЕСЛИ НЕ ФАВИКОНКА
+6. пробуешь по адресу, по которому перешел пользователь, асинхронно открыть html файл
+7. если нет ошибки - читаешь асинхронно файл и пишешь через write в ответ
+8. иначе - читаешь файл 404.html
+*/
